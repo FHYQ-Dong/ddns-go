@@ -1,0 +1,25 @@
+diff --git a/web/auth.go b/web/auth.go
+index bf44ef0..2b3919f 100644
+--- a/web/auth.go
++++ b/web/auth.go
+@@ -2,6 +2,7 @@ package web
+
+ import (
+ 	"net/http"
++	"os"
+ 	"time"
+
+ 	"github.com/jeessy2/ddns-go/v6/config"
+@@ -14,6 +15,12 @@ type ViewFunc func(http.ResponseWriter, *http.Request)
+ // Auth 验证Token是否已经通过
+ func Auth(f ViewFunc) ViewFunc {
+ 	return func(w http.ResponseWriter, r *http.Request) {
++		// [authheader patch] Trust a reverse-proxy auth header (e.g. Authentik forward-auth).
++		// Only honored for private-network requests (via the internal reverse proxy) so public clients cannot spoof it.
++		if h := os.Getenv("DDNS_GO_TRUSTED_AUTH_HEADER"); h != "" && r.Header.Get(h) != "" && util.IsPrivateNetwork(r.RemoteAddr) {
++			f(w, r)
++			return
++		}
+ 		cookieInWeb, err := r.Cookie(cookieName)
+ 		if err != nil {
+ 			http.Redirect(w, r, "./login", http.StatusTemporaryRedirect)
