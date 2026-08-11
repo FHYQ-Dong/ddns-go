@@ -41,11 +41,11 @@ jobs:
           platforms: linux/amd64            # homelab is amd64; add linux/arm64 (+ setup-qemu-action) if needed
           push: true
           tags: |
-            ghcr.io/${{ steps.owner.outputs.lc }}/ddns-go:${{ steps.up.outputs.tag }}-authheader
+            ghcr.io/${{ steps.owner.outputs.lc }}/ddns-go:${{ steps.up.outputs.tag }}
             ghcr.io/${{ steps.owner.outputs.lc }}/ddns-go:latest
       - if: steps.check.outputs.build == 'true'
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
           gh release create "${{ steps.up.outputs.tag }}-authheader" -R "${{ github.repository }}" \
             -t "${{ steps.up.outputs.tag }}-authheader" \
-            -n "Auto-built from upstream ${{ steps.up.outputs.tag }} + authheader patch. Image: ghcr.io/${{ steps.owner.outputs.lc }}/ddns-go:${{ steps.up.outputs.tag }}-authheader"
+            -n "Auto-built from upstream ${{ steps.up.outputs.tag }} + authheader patch. Image: ghcr.io/${{ steps.owner.outputs.lc }}/ddns-go:${{ steps.up.outputs.tag }}"
